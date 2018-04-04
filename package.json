@@ -1,9 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "build": "pulp build --to dist/app.js",
-    "watch": "pulp -w build --to dist/app.js",
-    "watch-fast": "webpack --entry ./entry.js --output-filename dist/app.js --progress --watch",
+    "build": "pulp build --to docs/app.js",
+    "watch": "pulp -w build --to docs/app.js",
+    "watch-fast": "webpack --entry ./entry.js --output-filename docs/app.js --progress --watch",
     "parcel:watch": "parcel index.html"
   },
   "devDependencies": {
