@@ -1,5 +1,7 @@
 # html2purescript
 
+Live at https://maackle.github.io/html2purescript/index.html
+
 Very basic parser/renderer to convert between raw HTML and (something close to) valid, readable PureScript syntax. Right now only outputs to Halogen.
 
 For HTML parsing, the app uses https://github.com/carymrobbins/purescript-html-parser, which is itself incomplete and not published to Pursuit, so it is included in my project as a submodule for now.
