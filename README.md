@@ -1,6 +1,6 @@
 # html2purescript
 
-Live at https://maackle.github.io/html2purescript/index.html
+Live at http://michaeldougherty.info/html2purescript/
 
 Very basic parser/renderer to convert between raw HTML and (something close to) valid, readable PureScript syntax. Right now only outputs to Halogen.
 
