@@ -8,3 +8,4 @@
 /yarn.lock
 /*.log
 /dist
+/docs
