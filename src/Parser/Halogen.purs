@@ -112,13 +112,13 @@ renderTree =
         Element name attrs children -> Array.singleton $
           (ExprIdent (fromHalogenHH (Ident name)))
           `ExprApp`
-          (ExprArray [])
+          (ExprArray (fold $ map renderAttr attrs))
           `ExprApp`
           ExprArray (fold $ map renderHtml children)
         VoidElement name attrs -> Array.singleton $
           (ExprIdent (fromHalogenHH (Ident name)))
-          -- | `ExprApp`
-          -- | (ExprArray [])
+          `ExprApp`
+          (ExprArray (fold $ map renderAttr attrs))
         TextNode content ->
           case String.trim content of
             "" -> []
