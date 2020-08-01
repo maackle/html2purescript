@@ -6,7 +6,7 @@ import Data.Array (singleton)
 import Data.Const (Const)
 import Data.Either (either)
 import Data.Maybe (Maybe(..))
-import Data.Newtype (wrap)
+import Halogen (ClassName(..))
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
@@ -41,12 +41,6 @@ testHtml = """<div class="main" id="zero">
 </div>
 """
 
-class' :: ∀ r a. String -> HH.IProp ("class" :: String | r) a
-class' s = HP.class_ $ wrap s
-
-classes' :: ∀ r a. Array String -> HH.IProp ("class" :: String | r) a
-classes' ss = HP.classes $ map wrap ss
-
 component :: forall m. H.Component HH.HTML (Const Void) Unit Void m
 component =
   H.mkComponent
@@ -63,8 +57,8 @@ component =
 
   render :: State -> H.ComponentHTML Action () m
   render state =
-    HH.div [ class' "container" ]
-      [ HH.h1 [ class' "title" ]
+    HH.div [ HP.class_ (ClassName "container") ]
+      [ HH.h1 [ HP.class_ (ClassName "title") ]
         [ selector [ "HTML"]
         , HH.text " → "
         , selector ["Halogen"]
@@ -80,7 +74,10 @@ component =
       ]
     where
       parsed = either show identity $ toHalogen state.raw
-      selector opts = HH.select [ class' "picker" ] $ (HH.option_ <<< singleton <<< HH.text) <$> opts
+
+      selector opts =
+        HH.select [ HP.class_ (ClassName "picker") ] $
+        (HH.option_ <<< singleton <<< HH.text) <$> opts
 
   handleAction :: Action -> H.HalogenM State Action () Void m Unit
   handleAction = case _ of

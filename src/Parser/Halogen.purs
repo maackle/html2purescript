@@ -28,7 +28,7 @@ renderTree d = case _ of
   (TextNode content) ->
     case trim content of
       "" -> ""
-      content -> "HH.text \"" <> content <> "\""
+      content' -> "HH.text \"" <> content' <> "\""
 
   (CommentNode content) -> "-- " <> trim content
 
@@ -80,7 +80,7 @@ renderAttr = case _ of
       case names of
         [] -> ""
         [name] -> "HP.class_ $ H.ClassName " <> name
-        names -> "HP.classes $ H.ClassName <$> " <> formatList false (toUnfoldable names)
+        names' -> "HP.classes $ H.ClassName <$> " <> formatList false (toUnfoldable names')
 
   Attribute "id" val ->
     "HP.id_ " <> quote val
