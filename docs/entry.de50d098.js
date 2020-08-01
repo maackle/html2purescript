@@ -636,4 +636,4 @@ parcelRequire=function(e,r,t,n){var i,o="function"==typeof parcelRequire&&parcel
 },{"../Component/index.js":"V1Aa","../Control.Bind/index.js":"VcTy","../Data.Functor/index.js":"AEHo","../Data.Unit/index.js":"NhVk","../Effect.Aff/index.js":"I7lu","../Effect.Class.Console/index.js":"Dts5","../Halogen.Aff.Util/index.js":"gm5i","../Halogen.VDom.Driver/index.js":"H99j"}],"BZ3n":[function(require,module,exports) {
 module.hot?(module.hot.accept(function(){console.log("hot module accepted"),Array.from(document.querySelectorAll("body > div")).map(function(o){return o.remove()}),console.log("deleted old entries"),require("./output/Main").rerunUI(document.body)()}),require("./output/Main").main(),console.log("started in hot reloading mode")):(require("./output/Main").main(),console.log("started in normal mode"));
 },{"./output/Main":"MrQo"}]},{},["BZ3n"], null)
-//# sourceMappingURL=/entry.de50d098.js.map
+//# sourceMappingURL=entry.de50d098.js.map

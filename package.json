@@ -3,7 +3,7 @@
   "scripts": {
     "dev:spago": "spago build --watch",
     "dev:server": "parcel watch index.html",
-    "build": "rm -fdr ./docs && spago build && parcel build --no-autoinstall --out-dir ./docs index.html"
+    "build": "rm -fdr ./docs && spago build && parcel build --no-autoinstall --public-url './' --out-dir ./docs index.html"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.4",
