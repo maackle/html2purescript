@@ -5,8 +5,8 @@ import Prelude
 import Data.Array (filter, fromFoldable, length, replicate, toUnfoldable)
 import Data.Either (Either)
 import Data.List (List)
-import Data.Monoid (class Monoid, mempty)
-import Data.String (Pattern(..), fromCharArray, joinWith, split, trim)
+import Data.String (Pattern(..), joinWith, split, trim)
+import Data.String.CodeUnits (fromCharArray)
 import Text.HTML.Parser (Attribute(..), HTML(..), parseHTML)
 import Text.Parsing.StringParser (ParseError)
 

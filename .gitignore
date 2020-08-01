@@ -4,4 +4,6 @@
 /bower_components/
 /node_modules/
 /output/
-npm-debug.log
+/package-lock.json
+/yarn.lock
+/*.log

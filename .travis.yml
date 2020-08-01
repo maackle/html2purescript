@@ -3,8 +3,8 @@ dist: trusty
 sudo: required
 node_js: stable
 install:
-  - npm install -g bower
+  - npm install -g spago purescript
   - npm install
-  - bower install
+  - spago install
 script:
-  - npm run build
+  - npm run bundle-app
