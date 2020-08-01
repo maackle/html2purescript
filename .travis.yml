@@ -7,4 +7,4 @@ install:
   - npm install
   - spago install
 script:
-  - npm run bundle-app
+  - spago build
