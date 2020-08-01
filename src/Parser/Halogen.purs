@@ -3,6 +3,7 @@ module Parser.Halogen where
 import Language.PS.SmartCST
 import Prelude
 
+import Parser.Halogen.Utils
 import Data.Array as Array
 import Data.Array.NonEmpty as NonEmptyArray
 import Data.Either (Either)
@@ -25,7 +26,36 @@ outputModule htmls =
   { moduleName: mkModuleName $ NonEmptyArray.singleton "YourModule"
   , exports: []
   , declarations:
-    (join $ map definedClassName $ spy "collectClassNames" (collectClassNames (spy "htmls" htmls)))
+    (join $ map definedClassName $ collectClassNames htmls)
+    <>
+    [ DeclSignature
+      { comments: Nothing
+      , ident: Ident "html"
+      , type_: TypeForall (NonEmptyArray.cons' (TypeVarName (Ident "w")) [(TypeVarName (Ident "i"))])
+        ( TypeConstructor
+          ( SmartQualifiedName__Custom
+            (mkModuleName $ NonEmptyArray.cons' "Halogen" ["HTML"])
+            (mkModuleName $ NonEmptyArray.cons' "HH" [])
+            (ProperName "HTML")
+          )
+          `TypeApp`
+          (TypeVar $ Ident "w")
+          `TypeApp`
+          (TypeVar $ Ident "i")
+        )
+      }
+    , DeclValue
+      { comments: Nothing
+      , valueBindingFields:
+        { name: Ident "html"
+        , binders: []
+        , guarded: Unconditional
+          { whereBindings: []
+          , expr: renderTree htmls
+          }
+        }
+      }
+    ]
   }
 
 definedClassName :: String -> Array Declaration
@@ -47,12 +77,7 @@ definedClassName className =
       , guarded: Unconditional
         { whereBindings: []
         , expr:
-          ( ExprConstructor $
-            SmartQualifiedNameConstructor__Simple
-            (mkModuleName $ NonEmptyArray.cons' "Halogen" ["HTML"])
-            (ProperName "ClassName")
-            (ProperName "ClassName")
-          )
+          exprClassNameConstructor
           `ExprApp`
           ( ExprString className )
         }
@@ -60,60 +85,46 @@ definedClassName className =
     }
   ]
 
-collectClassNames :: List HTML -> Array String
-collectClassNames =
+renderTree :: List HTML -> Expr
+renderTree =
   let
-    collectClassNamesHtml :: HTML -> Array String
-    collectClassNamesHtml = case _ of
-      (Element _name attrs children) -> trace _name (const $ foldListToArray collectClassNamesAttr attrs <> spy "foldListToArray" (foldListToArray collectClassNamesHtml children))
-      _ -> []
+    renderAttr :: Attribute -> Array Expr
+    renderAttr = case _ of
+      Attribute "class" val ->
+        case stringToClasses val of
+          [] -> []
+          [name] -> Array.singleton $
+            (ExprIdent (fromHalogenHP (Ident "class_")))
+            `ExprApp`
+            (ExprVar (Ident name))
+          names' -> Array.singleton $
+            (ExprIdent (fromHalogenHP (Ident "classes")))
+            `ExprApp`
+            (ExprArray $ names' <#> (\name -> ExprVar (Ident name)))
+      Attribute key val -> Array.singleton $
+        (ExprIdent (fromHalogenHP (Ident key)))
+        `ExprApp`
+        (ExprString val)
 
-    collectClassNamesAttr :: Attribute -> Array String
-    collectClassNamesAttr = case _ of
-      Attribute "class" val -> Array.filter (not String.null) $ String.split (String.Pattern " ") (spy "val" val)
-      _ -> []
-  in Array.nub <<< foldListToArray collectClassNamesHtml
-
-foldListToArray :: forall a . (a -> Array String) -> List a -> Array String
-foldListToArray f = map f >>> fold
-
-renderTree :: HTML -> String
-renderTree d = unsafeCoerce unit
-  -- | (VoidElement name attrs) ->
-  -- |   "HH." <> name <> formatAttrs attrs
-
-  -- | (TextNode content) ->
-  -- |   case trim content of
-  -- |     "" -> ""
-  -- |     content' -> "HH.text \"" <> content' <> "\""
-
-  -- | (CommentNode content) -> "-- " <> trim content
-
-  -- | (Element name attrs children) ->
-  -- |   let
-  -- |     tagHtml = if length (fromFoldable attrs) > 0
-  -- |       then "HH." <> name <> formatAttrs attrs
-  -- |       else "HH." <> name <> "_"
-  -- |     childHtml = indent 2 $ formatList true $ map (renderTree 0) children
-
-  -- |   in
-  -- |     tagHtml <> "\n" <> childHtml
-  -- | where
-  -- |   attrsOnNewLine = false
-  -- |   formatAttrs attrs = if' attrsOnNewLine "\n  " " " <> renderAttrs attrs
-
-
--- | renderAttr :: Attribute -> String
--- | renderAttr = case _ of
--- |   Attribute "class" val ->
--- |     let
--- |       names = map (\v -> "\"" <> v <> "\"") $ split (Pattern " ") val
--- |     in
--- |       case names of
--- |         [] -> ""
--- |         [name] -> "HP.class_ $ H.ClassName " <> name
--- |         names' -> "HP.classes $ H.ClassName <$> " <> formatList false (toUnfoldable names')
--- |   Attribute "id" val ->
--- |     "HP.id_ " <> quote val
--- |   Attribute key val ->
--- |     "HP." <> key <> " " <> quote val
+    renderHtml :: HTML -> Array Expr
+    renderHtml =
+      case _ of
+        Element name attrs children -> Array.singleton $
+          (ExprIdent (fromHalogenHH (Ident name)))
+          `ExprApp`
+          (ExprArray [])
+          `ExprApp`
+          ExprArray (fold $ map renderHtml children)
+        VoidElement name attrs -> Array.singleton $
+          (ExprIdent (fromHalogenHH (Ident name)))
+          -- | `ExprApp`
+          -- | (ExprArray [])
+        TextNode content ->
+          case String.trim content of
+            "" -> []
+            content' -> Array.singleton $ (ExprIdent (fromHalogenHH (Ident "text"))) `ExprApp` (ExprString content')
+        CommentNode content -> []
+   in \htmls ->
+     case fold $ map renderHtml htmls of
+          [a] -> a
+          other -> ExprArray other
