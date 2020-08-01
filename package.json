@@ -4,7 +4,7 @@
     "bundle-app": "spago bundle-app --to docs/app.js",
     "bundle-app:watch": "spago bundle-app --watch --to docs/app.js",
     "watch-fast": "webpack --entry ./entry.js --output-filename docs/app.js --progress --watch",
-    "parcel:watch": "parcel index.html"
+    "parcel": "rm -fdr ./docs && parcel build --no-autoinstall --out-dir ./docs index.html"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.4",
