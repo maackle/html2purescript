@@ -14,6 +14,7 @@ import Debug.Trace (spy, trace)
 import Text.HTML.Parser (Attribute(..), HTML(..), parseHTML)
 import Text.Parsing.StringParser (ParseError)
 import Unsafe.Coerce (unsafeCoerce)
+import Data.String.Common as String
 
 fromHalogenHH :: forall a. a -> SmartQualifiedName a
 fromHalogenHH = SmartQualifiedName__Custom (mkModuleName $ NonEmptyArray.cons' "Halogen" ["HTML"]) (mkModuleName $ NonEmptyArray.cons' "HH" [])
@@ -44,3 +45,7 @@ collectClassNames =
       Attribute "class" val -> stringToClasses val
       _ -> []
   in Array.nub <<< fold <<< map collectClassNamesHtml
+
+-- "--" is BAM style modifier
+classNameToFunctionName :: String -> String
+classNameToFunctionName = String.replaceAll (String.Pattern "--") (String.Replacement "____") >>> String.replaceAll (String.Pattern "-") (String.Replacement "_")

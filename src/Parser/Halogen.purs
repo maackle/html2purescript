@@ -62,7 +62,7 @@ definedClassName :: String -> Array Declaration
 definedClassName className =
   [ DeclSignature
     { comments: Nothing
-    , ident: Ident className
+    , ident: Ident (classNameToFunctionName className)
     , type_: TypeConstructor
       ( SmartQualifiedName__Simple
         (mkModuleName $ NonEmptyArray.cons' "Halogen" ["HTML"])
@@ -72,14 +72,14 @@ definedClassName className =
   , DeclValue
     { comments: Nothing
     , valueBindingFields:
-      { name: Ident className
+      { name: Ident (classNameToFunctionName className)
       , binders: []
       , guarded: Unconditional
         { whereBindings: []
         , expr:
           exprClassNameConstructor
           `ExprApp`
-          ( ExprString className )
+          (ExprString className)
         }
       }
     }
@@ -96,11 +96,11 @@ renderTree =
           [name] -> Array.singleton $
             (ExprIdent (fromHalogenHP (Ident "class_")))
             `ExprApp`
-            (ExprVar (Ident name))
+            (ExprVar (Ident (classNameToFunctionName name)))
           names' -> Array.singleton $
             (ExprIdent (fromHalogenHP (Ident "classes")))
             `ExprApp`
-            (ExprArray $ names' <#> (\name -> ExprVar (Ident name)))
+            (ExprArray $ names' <#> (\name -> ExprVar (Ident (classNameToFunctionName name))))
       Attribute key val -> Array.singleton $
         (ExprIdent (fromHalogenHP (Ident key)))
         `ExprApp`
