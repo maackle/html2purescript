@@ -135,10 +135,14 @@ let additions =
       , version =
           "master"
       }
-  , boxes =
+  , prettyprinter =
     { dependencies =
-      [ "generics-rep", "prelude", "profunctor", "strings", "stringutils" ]
-    , repo = "https://github.com/srghma/purescript-boxes.git"
+      [ "prelude"
+      , "unfoldable"
+      , "console"
+      , "stringutils"
+      ]
+    , repo = "https://github.com/srghma/purescript-prettyprinter.git"
     , version = "master"
     }
   , ps-cst =
@@ -153,9 +157,9 @@ let additions =
       , "node-path"
       , "node-fs-aff"
       , "ansi"
-      , "boxes"
+      , "prettyprinter"
       ]
-    , repo = "https://github.com/purescript-codegen/purescript-ps-cst.git"
+    , repo = "https://github.com/srghma/purescript-ps-cst.git"
     , version = "master"
     }
   }

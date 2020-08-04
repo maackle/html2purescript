@@ -18,7 +18,7 @@ import Unsafe.Coerce (unsafeCoerce)
 
 toHalogen :: String -> Either ParseError String
 toHalogen content = parseHTML content <#> \htmls ->
-  printModuleToString (outputModule htmls)
+  printModuleToString 80 (outputModule htmls)
 
 outputModule :: List HTML -> Module
 outputModule htmls =
