@@ -2,7 +2,9 @@
 
 > **THIS REPO IS NOT MAINTAINED**. It's designed to quickly bootstrap from HTML into Halogen markup, but it is not robust or complete. Feel free to fork!
 
-Live at http://michaeldougherty.info/html2purescript/
+Latest version live at https://srghma.github.io/html2purescript/
+
+Previous version [(see branch)](https://github.com/maackle/html2purescript/tree/pre-fork) live at http://michaeldougherty.info/html2purescript/
 
 Very basic parser/renderer to convert between raw HTML and (something close to) valid, readable PureScript syntax. Right now only outputs to Halogen.
 
