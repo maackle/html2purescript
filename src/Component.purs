@@ -3,18 +3,18 @@ module Component where
 import Prelude
 
 import Data.Array (singleton)
+import Data.Const (Const)
 import Data.Either (either)
 import Data.Maybe (Maybe(..))
-import Data.Newtype (wrap)
+import Halogen (ClassName(..))
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Parser.Halogen (toHalogen)
 
-data Query a
-  = ToggleState a
-  | ParseInput String a
+data Action
+  = ParseInput String
 
 type State =
   { on :: Boolean
@@ -41,36 +41,31 @@ testHtml = """<div class="main" id="zero">
 </div>
 """
 
-class' :: ∀ r a. String -> H.IProp ("class" :: String | r) a
-class' s = HP.class_ $ wrap s
-
-classes' :: ∀ r a. Array String -> H.IProp ("class" :: String | r) a
-classes' ss = HP.classes $ map wrap ss
-
-component :: forall m. H.Component HH.HTML Query Unit Void m
+component :: forall m. H.Component HH.HTML (Const Void) Unit Void m
 component =
-  H.component
+  H.mkComponent
     { initialState: const initialState
     , render
-    , eval
-    , receiver: const Nothing
+    , eval: H.mkEval $ H.defaultEval
+        { handleAction = handleAction
+        }
     }
   where
 
   initialState :: State
   initialState = { on: false, raw: testHtml }
 
-  render :: State -> H.ComponentHTML Query
+  render :: State -> H.ComponentHTML Action () m
   render state =
-    HH.div [ class' "container" ]
-      [ HH.h1 [ class' "title" ]
+    HH.div [ HP.class_ (ClassName "container") ]
+      [ HH.h1 [ HP.class_ (ClassName "title") ]
         [ selector [ "HTML"]
         , HH.text " → "
         , selector ["Halogen"]
         ]
       , HH.section []
         [ HH.label_ [ HH.text "HTML input:"]
-        , HH.textarea [ HP.value state.raw, HE.onValueChange (HE.input ParseInput) ]
+        , HH.textarea [ HP.value state.raw, HE.onValueChange (Just <<< ParseInput) ]
         ]
       , HH.section []
         [ HH.label_ [ HH.text "Halogen output:"]
@@ -78,14 +73,13 @@ component =
         ]
       ]
     where
-      parsed = either show id $ toHalogen state.raw
-      selector opts = HH.select [ class' "picker" ] $ (HH.option_ <<< singleton <<< HH.text) <$> opts
+      parsed = either show identity $ toHalogen state.raw
 
-  eval :: Query ~> H.ComponentDSL State Query Void m
-  eval = case _ of
-    ToggleState next -> do
-      H.modify (\state -> state { on = not state.on })
-      pure next
-    ParseInput raw next -> do
-      H.modify \state -> state { raw = raw }
-      pure next
+      selector opts =
+        HH.select [ HP.class_ (ClassName "picker") ] $
+        (HH.option_ <<< singleton <<< HH.text) <$> opts
+
+  handleAction :: Action -> H.HalogenM State Action () Void m Unit
+  handleAction = case _ of
+    ParseInput raw -> do
+      H.modify_ \state -> state { raw = raw }
