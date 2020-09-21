@@ -1,20 +1,15 @@
 module Parser.Halogen.Utils where
 
-import Language.PS.SmartCST
+import Language.PS.SmartCST (Expr(..), ProperName(..), SmartQualifiedName(..), SmartQualifiedNameConstructor(..), mkModuleName)
 import Prelude
 
 import Data.Array as Array
 import Data.Array.NonEmpty as NonEmptyArray
-import Data.Either (Either)
 import Data.Foldable (fold)
 import Data.List (List)
-import Data.Maybe (Maybe(..))
-import Data.String as String
-import Debug.Trace (spy, trace)
-import Text.HTML.Parser (Attribute(..), HTML(..), parseHTML)
-import Text.Parsing.StringParser (ParseError)
-import Unsafe.Coerce (unsafeCoerce)
-import Data.String.Common as String
+import Data.String (Pattern(..), Replacement(..)) as String
+import Text.HTML.Parser (Attribute(..), HTML(..))
+import Data.String.Common (null, replaceAll, split) as String
 
 fromHalogenHH :: forall a. a -> SmartQualifiedName a
 fromHalogenHH = SmartQualifiedName__Custom (mkModuleName $ NonEmptyArray.cons' "Halogen" ["HTML"]) (mkModuleName $ NonEmptyArray.cons' "HH" [])
@@ -22,6 +17,10 @@ fromHalogenHH = SmartQualifiedName__Custom (mkModuleName $ NonEmptyArray.cons' "
 fromHalogenHP :: forall a. a -> SmartQualifiedName a
 fromHalogenHP = SmartQualifiedName__Custom (mkModuleName $ NonEmptyArray.cons' "Halogen" ["HTML", "Properties"]) (mkModuleName $ NonEmptyArray.cons' "HP" [])
 
+fromHalogenHPAria :: forall a. a -> SmartQualifiedName a
+fromHalogenHPAria = SmartQualifiedName__Custom (mkModuleName $ NonEmptyArray.cons' "Halogen" ["HTML", "Properties", "ARIA"]) (mkModuleName $ NonEmptyArray.cons' "HP" ["ARIA"])
+
+exprClassNameConstructor :: Expr
 exprClassNameConstructor = ExprConstructor $
   SmartQualifiedNameConstructor__Simple
   (mkModuleName $ NonEmptyArray.cons' "Halogen" ["HTML"])

@@ -5,7 +5,6 @@ import Prelude
 import Data.Array (singleton)
 import Data.Const (Const)
 import Data.Either (either)
-import Data.Maybe (Maybe(..))
 import Halogen (ClassName(..))
 import Halogen as H
 import Halogen.HTML as HH
@@ -41,7 +40,7 @@ testHtml = """<div class="main" id="zero">
 </div>
 """
 
-component :: forall m. H.Component HH.HTML (Const Void) Unit Void m
+component :: forall m. H.Component (Const Void) Unit Void m
 component =
   H.mkComponent
     { initialState: const initialState
@@ -65,7 +64,7 @@ component =
         ]
       , HH.section []
         [ HH.label_ [ HH.text "HTML input:"]
-        , HH.textarea [ HP.value state.raw, HE.onValueChange (Just <<< ParseInput) ]
+        , HH.textarea [ HP.value state.raw, HE.onValueChange ParseInput ]
         ]
       , HH.section []
         [ HH.label_ [ HH.text "Halogen output:"]
