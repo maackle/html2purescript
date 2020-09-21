@@ -1,9 +1,7 @@
 module Parser.Halogen where
 
-import Language.PS.SmartCST
 import Prelude
 
-import Parser.Halogen.Utils
 import Data.Array as Array
 import Data.Array.NonEmpty as NonEmptyArray
 import Data.Either (Either)
@@ -11,14 +9,18 @@ import Data.Foldable (fold)
 import Data.List (List)
 import Data.Maybe (Maybe(..))
 import Data.String as String
-import Debug.Trace (spy, trace)
+import Data.String.CodeUnits (stripPrefix)
+import Data.String.Pattern (Pattern(..))
+import Dodo as Dodo
+import Language.PS.SmartCST (Declaration(..), Expr(..), Guarded(..), Ident(..), Module(..), ProperName(..), SmartQualifiedName(..), Type(..), TypeVarBinding(..), mkModuleName, printModule)
+import Parser.Halogen.Utils (classNameToFunctionName, collectClassNames, exprClassNameConstructor, fromHalogenHH, fromHalogenHP, fromHalogenHPAria, stringToClasses)
 import Text.HTML.Parser (Attribute(..), HTML(..), parseHTML)
 import Text.Parsing.StringParser (ParseError)
-import Unsafe.Coerce (unsafeCoerce)
+import Data.String.Extra as Data.String.Extra
 
 toHalogen :: String -> Either ParseError String
 toHalogen content = parseHTML content <#> \htmls ->
-  printModuleToString 80 (outputModule htmls)
+  Dodo.print Dodo.plainText Dodo.twoSpaces $ printModule $ outputModule htmls
 
 outputModule :: List HTML -> Module
 outputModule htmls =
@@ -101,10 +103,21 @@ renderTree =
             (ExprIdent (fromHalogenHP (Ident "classes")))
             `ExprApp`
             (ExprArray $ names' <#> (\name -> ExprVar (Ident (classNameToFunctionName name))))
-      Attribute key val -> Array.singleton $
-        (ExprIdent (fromHalogenHP (Ident key)))
-        `ExprApp`
-        (ExprString val)
+      Attribute key val ->
+        let
+          name =
+            case stripPrefix (Pattern "aria-") key of
+                 Nothing ->
+                   let
+                     appendUnderscore = Array.elem key ["id"]
+                     key' = if appendUnderscore then key <> "_" else key
+                   in fromHalogenHP (Ident key')
+                 Just key' -> fromHalogenHPAria $ Ident $ Data.String.Extra.camelCase key'
+         in
+            Array.singleton $
+            (ExprIdent name)
+            `ExprApp`
+            (ExprString val)
 
     renderHtml :: HTML -> Array Expr
     renderHtml =

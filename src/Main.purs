@@ -1,6 +1,6 @@
 module Main where
 
-import Prelude (Unit, bind, discard, unit, void, ($))
+import Prelude
 import Web.HTML (HTMLElement)
 
 import Component (component)
