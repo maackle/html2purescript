@@ -112,6 +112,7 @@ renderTree =
                      appendUnderscore = Array.elem key ["id"]
                      key' = if appendUnderscore then key <> "_" else key
                    in fromHalogenHP (Ident key')
+                 Just "labelledby" -> fromHalogenHPAria $ Ident "labelledBy"
                  Just key' -> fromHalogenHPAria $ Ident $ Data.String.Extra.camelCase key'
          in
             Array.singleton $
