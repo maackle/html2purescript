@@ -20,3 +20,7 @@ import Halogen.HTML.Properties as HP
 ```
 
 The project itself is written in Halogen and is based off https://github.com/qwaneu/purescript-halogen-template
+
+# Alternatives
+
+https://github.com/flip111/purescript-html2halogen
